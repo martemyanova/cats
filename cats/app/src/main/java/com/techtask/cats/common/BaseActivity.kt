@@ -7,7 +7,7 @@ open class BaseActivity : AppCompatActivity() {
 
     private val appComponent get() = (application as CatsApplication).appComponent
 
-    private val activityComponent by lazy {
+    val activityComponent by lazy {
         appComponent.activityComponent()
     }
 
