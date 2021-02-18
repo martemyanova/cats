@@ -19,13 +19,13 @@ class FetchCatsUseCase @Inject constructor(
     suspend fun execute(): Result {
         return withContext(Dispatchers.IO) {
             try {
-                val response = catsApi.getCats(20)
+                val response = catsApi.getCats(50)
                 if (response.isSuccessful && response.body() != null) {
 
                     Log.d("fetchCats", "${response.body()}")
                     val catResponse = response.body()!!
                     return@withContext Result.Success(catResponse.map {
-                        Cat(name = it.id)
+                        Cat(name = it.id, imageUrl = it.url)
                     })
                 } else {
                     Log.d("fetchCats", "Failure")

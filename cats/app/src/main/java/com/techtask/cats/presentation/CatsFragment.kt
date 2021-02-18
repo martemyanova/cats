@@ -17,13 +17,12 @@ class CatsFragment : BaseFragment() {
     @Inject
     lateinit var fetchCatsUseCase: FetchCatsUseCase
 
-    private lateinit var catsListViewComponent: CatsListViewComponent
+    @Inject
+    lateinit var catsListViewComponent: CatsListViewComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         injector.inject(this)
         super.onCreate(savedInstanceState)
-
-        catsListViewComponent = CatsListViewComponent()
     }
 
     override fun onCreateView(

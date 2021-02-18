@@ -3,9 +3,11 @@ package com.techtask.cats.presentation.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.techtask.cats.R
+import com.techtask.cats.common.imageloader.load
 import com.techtask.cats.domain.model.Cat
 
 class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
@@ -21,6 +23,7 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
     override fun onBindViewHolder(holder: CatViewHolder, position: Int) {
         val cat = catsList?.get(position) ?: return
         with (holder) {
+            imageView.load(cat.imageUrl)
             idTextView.text = cat.name
         }
     }
@@ -33,6 +36,7 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
     }
 
     class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val idTextView = itemView.findViewById<TextView>(R.id.tv_id)
+        val imageView: ImageView = itemView.findViewById(R.id.iv_image)
+        val idTextView: TextView = itemView.findViewById(R.id.tv_id)
     }
 }
