@@ -5,17 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.techtask.cats.common.BaseFragment
-import com.techtask.cats.domain.usecase.FetchCatsUseCase
 import com.techtask.cats.presentation.ui.CatsListViewComponent
-import kotlinx.coroutines.launch
+import com.techtask.cats.presentation.viewmodel.CatsListViewModel
 import javax.inject.Inject
 
 class CatsFragment : BaseFragment() {
 
     @Inject
-    lateinit var fetchCatsUseCase: FetchCatsUseCase
+    lateinit var viewModel: CatsListViewModel
 
     @Inject
     lateinit var catsListViewComponent: CatsListViewComponent
@@ -37,11 +35,11 @@ class CatsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         catsListViewComponent.onViewCreated()
 
-        lifecycleScope.launch {
-            val result = fetchCatsUseCase.execute()
-            if (result is FetchCatsUseCase.Result.Success) {
-                catsListViewComponent.bindData(result.cats)
+        with (viewModel) {
+            cats.observe(this@CatsFragment) { data ->
+                data?.let { catsListViewComponent.bindData(it) }
             }
+            loadData()
         }
     }
 

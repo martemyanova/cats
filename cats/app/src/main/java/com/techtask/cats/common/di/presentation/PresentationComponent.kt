@@ -4,7 +4,7 @@ import com.techtask.cats.presentation.CatsFragment
 import dagger.Subcomponent
 
 @PresentationScope
-@Subcomponent
+@Subcomponent(modules = [ViewModelModule::class])
 interface PresentationComponent {
     fun inject(activity: CatsFragment)
 }
