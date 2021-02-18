@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.techtask.cats.R
 import com.techtask.cats.common.imageloader.load
@@ -23,8 +24,15 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
     override fun onBindViewHolder(holder: CatViewHolder, position: Int) {
         val cat = catsList?.get(position) ?: return
         with (holder) {
+            val context = imageView.context
             imageView.load(cat.imageUrl)
-            idTextView.text = cat.name
+
+            if (cat.breed != null) {
+                breedTextView.text = context.getString(R.string.cats_list_item_breed_title, cat.breed)
+                breedTextView.isVisible = true
+            } else {
+                breedTextView.isVisible = false
+            }
         }
     }
 
@@ -37,6 +45,6 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
 
     class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.iv_image)
-        val idTextView: TextView = itemView.findViewById(R.id.tv_id)
+        val breedTextView: TextView = itemView.findViewById(R.id.tv_breed)
     }
 }

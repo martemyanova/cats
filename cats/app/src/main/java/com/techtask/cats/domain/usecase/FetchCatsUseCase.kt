@@ -19,26 +19,35 @@ class FetchCatsUseCase @Inject constructor(
     suspend fun execute(): Result {
         return withContext(Dispatchers.IO) {
             try {
-                val response = catsApi.getCats(50)
+                val response = catsApi.getCats(RESPONSE_LIMIT)
                 if (response.isSuccessful && response.body() != null) {
 
-                    Log.d("fetchCats", "${response.body()}")
+                    Log.d(TAG, "${response.body()}")
                     val catResponse = response.body()!!
                     return@withContext Result.Success(catResponse.map {
-                        Cat(name = it.id, imageUrl = it.url)
+                        val breed = it.breeds?.getOrNull(0)
+                        Cat(
+                            imageUrl = it.url,
+                            breed = breed?.name,
+                            temperament = breed?.temperament)
                     })
                 } else {
-                    Log.d("fetchCats", "Failure")
+                    Log.d("TAG", "Failure")
                     return@withContext Result.Failure
                 }
             } catch (t: Throwable) {
                 if (t !is CancellationException) {
-                    Log.d("fetchCats", "Failure", t)
+                    Log.e(TAG, "Failure", t)
                     return@withContext Result.Failure
                 } else {
                     throw t
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "FetchCatsUseCase"
+        private const val RESPONSE_LIMIT = 50
     }
 }

@@ -1,6 +1,7 @@
 package com.techtask.cats.domain.model
 
 data class Cat(
-    val name: String,
-    val imageUrl: String
+    val imageUrl: String,
+    val breed: String?,
+    val temperament: String?
 )
