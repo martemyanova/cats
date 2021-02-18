@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.techtask.cats.common.BaseFragment
 import com.techtask.cats.presentation.ui.CatsListViewComponent
 import com.techtask.cats.presentation.viewmodel.CatsListViewModel
+import com.techtask.cats.presentation.viewmodel.CatsListViewModel.LoadingState
 import javax.inject.Inject
 
 class CatsFragment : BaseFragment() {
@@ -15,12 +16,13 @@ class CatsFragment : BaseFragment() {
     @Inject
     lateinit var viewModel: CatsListViewModel
 
-    @Inject
-    lateinit var catsListViewComponent: CatsListViewComponent
+    private lateinit var catsListViewComponent: CatsListViewComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         injector.inject(this)
         super.onCreate(savedInstanceState)
+
+        catsListViewComponent = CatsListViewComponent(::onReloadClick)
     }
 
     override fun onCreateView(
@@ -39,8 +41,20 @@ class CatsFragment : BaseFragment() {
             cats.observe(this@CatsFragment) { data ->
                 data?.let { catsListViewComponent.bindData(it) }
             }
+            loadingState.observe(this@CatsFragment) { state ->
+                when (state) {
+                    LoadingState.LOADING ->
+                        catsListViewComponent.showLoadingProgress()
+                    LoadingState.ERROR ->
+                        catsListViewComponent.showErrorMessage()
+                }
+            }
             loadData()
         }
+    }
+
+    private fun onReloadClick() {
+        viewModel.loadData()
     }
 
     companion object {
