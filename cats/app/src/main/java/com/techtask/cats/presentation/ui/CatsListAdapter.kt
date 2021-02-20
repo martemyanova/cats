@@ -27,13 +27,20 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.CatViewHolder>() {
             val context = imageView.context
             imageView.load(cat.imageUrl)
 
-            if (cat.breed != null) {
-                breedTextView.text = context.getString(R.string.cats_list_item_breed_title, cat.breed)
-                breedTextView.isVisible = true
-            } else {
-                breedTextView.isVisible = false
-            }
+            breedTextView.text = context.getString(R.string.cats_list_item_breed_title, cat.breedNames())
+            breedTextView.isVisible = true
         }
+    }
+
+    private fun Cat.breedNames(): String {
+        val names = StringBuffer()
+        this.breeds.forEach {
+            if (names.isNotEmpty()) {
+                names.append(", ")
+            }
+            names.append(it.name)
+        }
+        return names.toString()
     }
 
     override fun getItemCount() = catsList?.size ?: 0
