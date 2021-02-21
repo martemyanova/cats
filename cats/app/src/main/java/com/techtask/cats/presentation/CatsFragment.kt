@@ -10,7 +10,6 @@ import com.techtask.cats.common.BaseFragment
 import com.techtask.cats.common.viewmodel.ViewModelFactory
 import com.techtask.cats.presentation.ui.CatsListViewComponent
 import com.techtask.cats.presentation.viewmodel.CatsListViewModel
-import com.techtask.cats.presentation.viewmodel.CatsListViewModel.LoadingState
 import javax.inject.Inject
 
 class CatsFragment : BaseFragment() {
@@ -48,12 +47,7 @@ class CatsFragment : BaseFragment() {
                 data?.let { catsListViewComponent.bindData(it) }
             }
             loadingState.observe(this@CatsFragment) { state ->
-                when (state) {
-                    LoadingState.LOADING ->
-                        catsListViewComponent.showLoadingProgress()
-                    LoadingState.ERROR ->
-                        catsListViewComponent.showErrorMessage()
-                }
+                catsListViewComponent.updateState(state)
             }
             loadData()
         }

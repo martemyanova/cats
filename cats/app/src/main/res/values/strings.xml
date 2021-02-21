@@ -5,4 +5,5 @@
     <string name="cats_list_item_breed_title">Breed: %s</string>
     <string name="search_hint">Search cats images by breeds</string>
     <string name="menu_action_search">Search</string>
+    <string name="cats_list_nothing_was_found_message">Nothing was found.</string>
 </resources>

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.techtask.cats.R
 import com.techtask.cats.domain.model.Cat
+import com.techtask.cats.presentation.viewmodel.CatsListViewState
 
 class CatsListViewComponent(private val onReloadClick: () -> Unit) {
 
@@ -29,7 +30,7 @@ class CatsListViewComponent(private val onReloadClick: () -> Unit) {
     fun onViewCreated() {
         setupRecyclerView()
         setupReloadButton()
-        showLoadingProgress()
+        updateState(CatsListViewState.LOADING)
     }
 
     private fun setupRecyclerView() {
@@ -49,28 +50,15 @@ class CatsListViewComponent(private val onReloadClick: () -> Unit) {
 
     fun bindData(cats: List<Cat>) {
         catsListAdapter.submitList(cats)
-        showContent()
+        updateState(CatsListViewState.DATA_READY)
     }
 
-    fun showLoadingProgress() {
-        contentRecyclerView.isVisible = false
-        progressBarView.isVisible = true
-        errorMessageTextView.isVisible = false
-        reloadButton.isVisible = false
-    }
-
-    private fun showContent() {
-        contentRecyclerView.isVisible = true
-        progressBarView.isVisible = false
-        errorMessageTextView.isVisible = false
-        reloadButton.isVisible = false
-    }
-
-    fun showErrorMessage() {
-        contentRecyclerView.isVisible = false
-        progressBarView.isVisible = false
-        errorMessageTextView.isVisible = true
-        reloadButton.isVisible = true
+    fun updateState(state: CatsListViewState) {
+        contentRecyclerView.isVisible = state == CatsListViewState.DATA_READY
+        progressBarView.isVisible = state == CatsListViewState.LOADING
+        errorMessageTextView.isVisible = state == CatsListViewState.ERROR
+        reloadButton.isVisible = state == CatsListViewState.ERROR
+        nothingFoundMessageTextView.isVisible = state == CatsListViewState.NOTHING_FOUND
     }
 
     private val context by lazy { rootView.context }
@@ -78,8 +66,11 @@ class CatsListViewComponent(private val onReloadClick: () -> Unit) {
 
     private val contentRecyclerView by lazy { rootView.findViewById<RecyclerView>(R.id.rv_content) }
     private val progressBarView by lazy { rootView.findViewById<ProgressBar>(R.id.pb_progress_bar) }
-    private val errorMessageTextView by lazy { rootView.findViewById<TextView>(R.id.tv_error_message) }
+    private val errorMessageTextView by lazy {
+        rootView.findViewById<TextView>(R.id.tv_error_message) }
     private val reloadButton by lazy { rootView.findViewById<Button>(R.id.bt_reload) }
+    private val nothingFoundMessageTextView by lazy {
+        rootView.findViewById<TextView>(R.id.tv_nothing_was_found_message) }
 
     private inline fun <reified T : View> findViewById(@IdRes widgetResId: Int): T {
         return rootView.findViewById(widgetResId)

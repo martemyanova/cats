@@ -24,7 +24,7 @@ class CatsListViewModel @Inject constructor(
     private val _cats = MutableLiveData<List<Cat>>()
     val cats: LiveData<List<Cat>> = _cats
 
-    val loadingState = SingleLiveEvent<LoadingState>()
+    val loadingState = SingleLiveEvent<CatsListViewState>()
 
     private var breeds: List<Breed>? = null
 
@@ -38,25 +38,33 @@ class CatsListViewModel @Inject constructor(
                     val firsBreedResult = result.data.get(0)
                     loadData(firsBreedResult.id)
                 }
+            } else {
+                loadingState.value = CatsListViewState.ERROR
             }
         }
     }
 
     private fun loadData(breedId: String) {
         Log.d("fetchCats", "loadData, breedId: $breedId")
-        loadingState.value = LoadingState.LOADING
+        loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
             val result = fetchCatsUseCase.execute(breedId)
             if (result is Result.Success) {
                 _cats.value = result.data
+                if (result.data.isNotEmpty()) {
+                    loadingState.value = CatsListViewState.DATA_READY
+                } else {
+                    loadingState.value = CatsListViewState.NOTHING_FOUND
+                }
             } else {
-                loadingState.value = LoadingState.ERROR
+                loadingState.value = CatsListViewState.ERROR
             }
         }
     }
 
     fun onSearchRequest(query: String) {
         Log.d("fetchCats", "onSearchRequest, query: $query")
+        loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
             val result = searchBreedsUseCase.execute(query)
             if (result is Result.Success) {
@@ -64,10 +72,12 @@ class CatsListViewModel @Inject constructor(
                 if (result.data.isNotEmpty()) {
                     val breedId = result.data.get(0).id
                     loadData(breedId)
+                } else {
+                    loadingState.value = CatsListViewState.NOTHING_FOUND
                 }
+            } else {
+                loadingState.value = CatsListViewState.ERROR
             }
         }
     }
-
-    enum class LoadingState { LOADING, ERROR }
 }
