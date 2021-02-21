@@ -1,6 +1,5 @@
 package com.techtask.cats.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,7 +31,6 @@ class CatsListViewModel @Inject constructor(
         viewModelScope.launch {
             val result = fetchAllBreedsUseCase.execute()
             if (result is Result.Success) {
-                Log.d("fetchCats", "fetchAllBreedsUseCase, breeds count: ${result.data.size}")
                 breeds = result.data
                 if (result.data.isNotEmpty()) {
                     val firsBreedResult = result.data.get(0)
@@ -45,7 +43,6 @@ class CatsListViewModel @Inject constructor(
     }
 
     private fun loadData(breedId: String) {
-        Log.d("fetchCats", "loadData, breedId: $breedId")
         loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
             val result = fetchCatsUseCase.execute(breedId)
@@ -63,12 +60,10 @@ class CatsListViewModel @Inject constructor(
     }
 
     fun onSearchRequest(query: String) {
-        Log.d("fetchCats", "onSearchRequest, query: $query")
         loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
             val result = searchBreedsUseCase.execute(query)
             if (result is Result.Success) {
-                Log.d("fetchCats", "breeds count: ${result.data.size}")
                 if (result.data.isNotEmpty()) {
                     val breedId = result.data.get(0).id
                     loadData(breedId)

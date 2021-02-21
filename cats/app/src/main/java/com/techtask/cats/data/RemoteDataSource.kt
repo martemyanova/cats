@@ -1,6 +1,5 @@
 package com.techtask.cats.data
 
-import android.util.Log
 import com.techtask.cats.domain.model.Breed
 import com.techtask.cats.domain.model.Cat
 import com.techtask.cats.common.Result
@@ -20,18 +19,15 @@ class RemoteDataSource @Inject constructor(
                 val response = catsApi.searchBreedsByName(searchString)
                 if (response.isSuccessful && response.body() != null) {
 
-                    Log.d(TAG, "${response.body()}")
                     val breedResponse = response.body()!!
                     return@withContext Result.Success(breedResponse.map {
                         it.parse()
                     })
                 } else {
-                    Log.d(TAG, "Failure")
                     return@withContext Result.Failure()
                 }
             } catch (t: Throwable) {
                 if (t !is CancellationException) {
-                    Log.e(TAG, "Failure", t)
                     return@withContext Result.Failure(t)
                 } else {
                     throw t
@@ -46,18 +42,15 @@ class RemoteDataSource @Inject constructor(
                 val response = catsApi.getBreeds()
                 if (response.isSuccessful && response.body() != null) {
 
-                    Log.d(TAG, "${response.body()}")
                     val breedResponse = response.body()!!
                     return@withContext Result.Success(breedResponse.map {
                         it.parse()
                     })
                 } else {
-                    Log.d(TAG, "Failure")
                     return@withContext Result.Failure()
                 }
             } catch (t: Throwable) {
                 if (t !is CancellationException) {
-                    Log.e(TAG, "Failure", t)
                     return@withContext Result.Failure(t)
                 } else {
                     throw t
@@ -72,18 +65,15 @@ class RemoteDataSource @Inject constructor(
                 val response = catsApi.getCats(PARAM_IMAGE_SIZE_MEDIUM, RESPONSE_LIMIT, breedId)
                 if (response.isSuccessful && response.body() != null) {
 
-                    Log.d(TAG, "${response.body()}")
                     val catResponse = response.body()!!
                     return@withContext Result.Success(catResponse.map {
                         it.parse()
                     })
                 } else {
-                    Log.d(TAG, "Failure")
                     return@withContext Result.Failure()
                 }
             } catch (t: Throwable) {
                 if (t !is CancellationException) {
-                    Log.e(TAG, "Failure", t)
                     return@withContext Result.Failure(t)
                 } else {
                     throw t
