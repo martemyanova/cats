@@ -25,36 +25,25 @@ class CatsListViewModel @Inject constructor(
 
     val loadingState = SingleLiveEvent<CatsListViewState>()
 
-    private var breeds: List<Breed>? = null
+    private var breedId: String? = null
 
     fun loadData() {
         viewModelScope.launch {
-            val result = fetchAllBreedsUseCase.execute()
-            if (result is Result.Success) {
-                breeds = result.data
-                if (result.data.isNotEmpty()) {
-                    val firsBreedResult = result.data.get(0)
-                    loadData(firsBreedResult.id)
+            if (breedId == null) {
+                fetchAllBreedsUseCase.execute().handleResult { result ->
+                    breedId = result.data[0].id
                 }
-            } else {
-                loadingState.value = CatsListViewState.ERROR
             }
+            breedId?.let { loadData(it) }
         }
     }
 
     private fun loadData(breedId: String) {
         loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
-            val result = fetchCatsUseCase.execute(breedId)
-            if (result is Result.Success) {
+            fetchCatsUseCase.execute(breedId).handleResult { result ->
                 _cats.value = result.data
-                if (result.data.isNotEmpty()) {
-                    loadingState.value = CatsListViewState.DATA_READY
-                } else {
-                    loadingState.value = CatsListViewState.NOTHING_FOUND
-                }
-            } else {
-                loadingState.value = CatsListViewState.ERROR
+                loadingState.value = CatsListViewState.DATA_READY
             }
         }
     }
@@ -62,17 +51,24 @@ class CatsListViewModel @Inject constructor(
     fun onSearchRequest(query: String) {
         loadingState.value = CatsListViewState.LOADING
         viewModelScope.launch {
-            val result = searchBreedsUseCase.execute(query)
-            if (result is Result.Success) {
-                if (result.data.isNotEmpty()) {
-                    val breedId = result.data.get(0).id
-                    loadData(breedId)
-                } else {
-                    loadingState.value = CatsListViewState.NOTHING_FOUND
-                }
-            } else {
-                loadingState.value = CatsListViewState.ERROR
+            searchBreedsUseCase.execute(query).handleResult { result ->
+                breedId = result.data.get(0).id
+                breedId?.let { loadData(it) }
             }
+        }
+    }
+
+    private fun <D> Result<List<D>>.handleResult(
+        onSuccessResult: (result: Result.Success<List<D>>) -> Unit
+    ) {
+        if (this is Result.Success) {
+            if (this.data.isNotEmpty()) {
+                onSuccessResult(this)
+            } else {
+                loadingState.value = CatsListViewState.NOTHING_FOUND
+            }
+        } else {
+            loadingState.value = CatsListViewState.ERROR
         }
     }
 }
