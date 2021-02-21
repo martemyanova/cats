@@ -10,7 +10,7 @@ interface CatsApi {
 
     @Headers(CATS_API_KEY_HEADER)
     @GET(BREED)
-    suspend fun getBreeds(): Response<List<BreedSchema>>
+    suspend fun getBreeds(@Query("limit") limit: Int): Response<List<BreedSchema>>
 
     @Headers(CATS_API_KEY_HEADER)
     @GET(BREED_SEARCH)

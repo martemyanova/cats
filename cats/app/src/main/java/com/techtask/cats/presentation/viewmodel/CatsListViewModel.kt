@@ -6,9 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.techtask.cats.common.Result
 import com.techtask.cats.common.util.SingleLiveEvent
-import com.techtask.cats.domain.model.Breed
 import com.techtask.cats.domain.model.Cat
-import com.techtask.cats.domain.usecase.FetchAllBreedsUseCase
+import com.techtask.cats.domain.usecase.FetchFirstBreedsUseCase
 import com.techtask.cats.domain.usecase.SearchBreedsUseCase
 import com.techtask.cats.domain.usecase.FetchCatsUseCase
 import kotlinx.coroutines.launch
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class CatsListViewModel @Inject constructor(
     private var fetchCatsUseCase: FetchCatsUseCase,
     private val searchBreedsUseCase: SearchBreedsUseCase,
-    private var fetchAllBreedsUseCase: FetchAllBreedsUseCase
+    private var fetchFirstBreedsUseCase: FetchFirstBreedsUseCase
 ) : ViewModel() {
 
     private val _cats = MutableLiveData<List<Cat>>()
@@ -30,8 +29,12 @@ class CatsListViewModel @Inject constructor(
     fun loadData() {
         viewModelScope.launch {
             if (breedId == null) {
-                fetchAllBreedsUseCase.execute().handleResult { result ->
-                    breedId = result.data[0].id
+                fetchFirstBreedsUseCase.execute().apply {
+                    if (this is Result.Success) {
+                        breedId = this.data.id
+                    } else {
+                        loadingState.value = CatsListViewState.ERROR
+                    }
                 }
             }
             breedId?.let { loadData(it) }

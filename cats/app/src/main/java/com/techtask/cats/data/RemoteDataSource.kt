@@ -36,16 +36,16 @@ class RemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun retrieveBreeds(): Result<List<Breed>> {
+    suspend fun retrieveFirstBreed(): Result<Breed> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = catsApi.getBreeds()
+                val response = catsApi.getBreeds(BREEDS_RESPONSE_LIMIT)
                 if (response.isSuccessful && response.body() != null) {
 
                     val breedResponse = response.body()!!
-                    return@withContext Result.Success(breedResponse.map {
-                        it.parse()
-                    })
+                    return@withContext Result.Success(breedResponse
+                        .map { it.parse() }
+                        .get(0))
                 } else {
                     return@withContext Result.Failure()
                 }
@@ -62,7 +62,7 @@ class RemoteDataSource @Inject constructor(
     suspend fun retrieveCats(breedId: String): Result<List<Cat>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = catsApi.getCats(PARAM_IMAGE_SIZE_MEDIUM, RESPONSE_LIMIT, breedId)
+                val response = catsApi.getCats(PARAM_IMAGE_SIZE_MEDIUM, CATS_RESPONSE_LIMIT, breedId)
                 if (response.isSuccessful && response.body() != null) {
 
                     val catResponse = response.body()!!
@@ -103,7 +103,7 @@ class RemoteDataSource @Inject constructor(
             wikipediaUrl = this.wikipediaUrl)
 
     companion object {
-        private const val TAG = "RemoteDataSource"
-        private const val RESPONSE_LIMIT = 50
+        private const val CATS_RESPONSE_LIMIT = 50
+        private const val BREEDS_RESPONSE_LIMIT = 1
     }
 }
