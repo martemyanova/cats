@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import com.techtask.cats.common.BaseActivity
@@ -13,7 +12,6 @@ import com.techtask.cats.common.viewmodel.ViewModelFactory
 import com.techtask.cats.presentation.CatsFragment
 import com.techtask.cats.presentation.viewmodel.CatsListViewModel
 import javax.inject.Inject
-
 
 class MainActivity : BaseActivity() {
 
@@ -56,29 +54,17 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         optionsMenu = menu
         menuInflater.inflate(R.menu.menu_main, menu)
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchView: SearchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView
-        searchView.setSearchableInfo(
-            searchManager.getSearchableInfo(componentName))
-        searchView.isIconifiedByDefault = false
+        (menu.findItem(R.id.menu_search)?.actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            isIconifiedByDefault = false
+        }
 
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_search -> {
-                onSearchRequested()
-                true
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-        }
     }
 
     override fun onSearchRequested(): Boolean {
