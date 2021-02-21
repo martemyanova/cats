@@ -9,8 +9,12 @@ import retrofit2.http.Query
 interface CatsApi {
 
     @Headers(CATS_API_KEY_HEADER)
-    @GET(BREED_SEARCH)
+    @GET(BREED)
     suspend fun getBreeds(): Response<List<BreedSchema>>
+
+    @Headers(CATS_API_KEY_HEADER)
+    @GET(BREED_SEARCH)
+    suspend fun searchBreedsByName(@Query("q") searchString: String): Response<List<BreedSchema>>
 
     @Headers(CATS_API_KEY_HEADER)
     @GET(IMAGE_SEARCH)
@@ -22,7 +26,8 @@ interface CatsApi {
 
     companion object {
         const val BASE_URL = "https://api.thecatapi.com/v1/"
-        private const val BREED_SEARCH = "breeds"
+        private const val BREED = "breeds"
+        private const val BREED_SEARCH = "$BREED/search"
         private const val IMAGE_SEARCH = "images/search"
         private const val CATS_API_KEY_HEADER = "x-api-key: 52b2f999-f951-4c22-9096-9c4befed4caa"
 

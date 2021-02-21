@@ -14,6 +14,32 @@ import javax.inject.Inject
 class RemoteDataSource @Inject constructor(
     private val catsApi: CatsApi
 ) {
+    suspend fun searchBreedsByName(searchString: String): Result<List<Breed>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = catsApi.searchBreedsByName(searchString)
+                if (response.isSuccessful && response.body() != null) {
+
+                    Log.d(TAG, "${response.body()}")
+                    val breedResponse = response.body()!!
+                    return@withContext Result.Success(breedResponse.map {
+                        it.parse()
+                    })
+                } else {
+                    Log.d(TAG, "Failure")
+                    return@withContext Result.Failure()
+                }
+            } catch (t: Throwable) {
+                if (t !is CancellationException) {
+                    Log.e(TAG, "Failure", t)
+                    return@withContext Result.Failure(t)
+                } else {
+                    throw t
+                }
+            }
+        }
+    }
+
     suspend fun retrieveBreeds(): Result<List<Breed>> {
         return withContext(Dispatchers.IO) {
             try {

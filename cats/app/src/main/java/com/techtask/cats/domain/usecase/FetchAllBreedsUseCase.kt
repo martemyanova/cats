@@ -5,7 +5,7 @@ import com.techtask.cats.data.RemoteDataSource
 import com.techtask.cats.domain.model.Breed
 import javax.inject.Inject
 
-class FetchBreedsUseCase @Inject constructor(
+class FetchAllBreedsUseCase @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) {
     suspend fun execute(): Result<List<Breed>> {

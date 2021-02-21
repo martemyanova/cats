@@ -8,7 +8,7 @@ import javax.inject.Inject
 class FetchCatsUseCase @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) {
-    suspend fun execute(): Result<List<Cat>> {
-        return remoteDataSource.retrieveCats("abys")
+    suspend fun execute(breedId: String): Result<List<Cat>> {
+        return remoteDataSource.retrieveCats(breedId)
     }
 }
