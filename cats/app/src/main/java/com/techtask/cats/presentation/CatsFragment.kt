@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.techtask.cats.common.BaseFragment
+import com.techtask.cats.common.viewmodel.ViewModelFactory
 import com.techtask.cats.presentation.ui.CatsListViewComponent
 import com.techtask.cats.presentation.viewmodel.CatsListViewModel
 import com.techtask.cats.presentation.viewmodel.CatsListViewModel.LoadingState
@@ -14,6 +16,8 @@ import javax.inject.Inject
 class CatsFragment : BaseFragment() {
 
     @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     lateinit var viewModel: CatsListViewModel
 
     private lateinit var catsListViewComponent: CatsListViewComponent
@@ -21,6 +25,8 @@ class CatsFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         injector.inject(this)
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(CatsListViewModel::class.java)
 
         catsListViewComponent = CatsListViewComponent(::onReloadClick)
     }
